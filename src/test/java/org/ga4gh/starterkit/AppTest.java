@@ -3,9 +3,6 @@
  */
 package org.ga4gh.starterkit;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
-
 public class AppTest {
     
 }
