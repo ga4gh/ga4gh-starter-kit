@@ -3,34 +3,37 @@
  */
 package org.ga4gh.starterkit;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
+import javax.naming.ConfigurationException;
+
+import org.apache.commons.cli.ParseException;
+import org.ga4gh.starterkit.springconfig.StarterKitSpringConfig;
+import org.ga4gh.starterkit.springconfig.services.DrsServiceSpringConfig;
+import org.ga4gh.starterkit.springconfig.services.WesServiceSpringConfig;
+import org.ga4gh.starterkit.startup.Startup;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-@SpringBootApplication(exclude = {
-    org.ga4gh.starterkit.drs.App.class,
-    org.ga4gh.starterkit.drs.AppConfig.class,
-    org.ga4gh.starterkit.wes.App.class
+@Configuration
+@EnableAutoConfiguration
+@Import({
+    StarterKitSpringConfig.class,
+    DrsServiceSpringConfig.class,
+    WesServiceSpringConfig.class
 })
 public class StarterKit {
 
     public static void main(String[] args) {
-        System.out.println("Starting Starter Kit App");
-        System.out.println("Going to register services");
-
-        System.out.println("Going to run services");
-        // SpringApplication.run(StarterKit.class, args);
-
-        // SpringApplication.run(org.ga4gh.starterkit.drs.App.class, args);
-
-        List<Class<?>> foo = new ArrayList<>();
-        foo.add(org.ga4gh.starterkit.drs.App.class);
-        foo.add(org.ga4gh.starterkit.drs.AppConfig.class);
-        Class<?>[] foobs = new Class<?> [foo.size()];
-        foo.toArray(foobs);
-        
-        SpringApplication.run(foobs, args);
+        try {
+            Startup.startup(args);
+            SpringApplication.run(StarterKit.class, args);
+        } catch (ParseException ex) {
+            System.out.println("Could not parse config file");
+        } catch (IllegalArgumentException | IOException | ConfigurationException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }
